@@ -131,46 +131,42 @@ const createCart = async function (req, res) {
 
 const removeProduct = async function (req, res) {
     try {
-        if (!validation.validBody(req.body)) {
-            return res.status(400).send({ status: false, msg: "Bad req Body" })
-        }
         let userId = req.params.userId
         if (!validation.validObjectId(userId)) {
             return res.status(400).send({ status: false, msg: "Bad ObjectId in params" })
         }
-        let userExist = await userModel.findById({ _id: userId })
-        if (!userExist) {
-            return res.status(404).send({ status: false, msg: "User Does Not Exist" })
+        if (!validation.validBody(req.body)) {
+            return res.status(400).send({ status: false, msg: "Bad req Body" })
         }
         let { cartId, productId, removeProduct } = req.body
-
-        if (!validation.isValid(cartId) || !validation.isValid(productId) || !validation.isValid(removeProduct)) {
-            return res.status(400).send({ status: false, msg: "Bad fields please enter cartId, productId,removeProduct" })
-        }
-        if (userId != req.userid) {
-            return res.status(403).send({ status: false, message: "unauthorized user, not allowed to create cart in another user account" })
-        }
-
-        if (!(removeProduct == '0' || removeProduct == '1')) {
-            return res.status(400).send({ status: false, msg: "Bad field for removeProduct" })
-        }
-        removeProduct = Number(removeProduct)
-
+       
         if (!validation.validObjectId(cartId)) {
             return res.status(400).send({ status: false, msg: "Bad ObjectId for cartId" })
         }
         if (!validation.validObjectId(productId)) {
             return res.status(400).send({ status: false, msg: "Bad ObjectId for ProductId" })
         }
-        let cartExists = await cartModel.findById({ _id: cartId })
-        if (!cartExists) return res.status(404).send({ status: false, msg: "Cart Does Not Exist" })
+        let userExist = await userModel.findById({ _id: userId })
+        if (!userExist) {
+            return res.status(404).send({ status: false, msg: "User Does Not Exist" })
+        }
+        if (userId != req.userid) {
+            return res.status(403).send({ status: false, message: "unauthorized user, not allowed to create cart in another user account" })
+        }
+        let cartExists = await cartModel.findById({ _id: cartId, userId:userId })
+        if (!cartExists) return res.status(404).send({ status: false, msg: "No cart found for this user" })
 
         let productExists = await productModel.findOne({ _id: productId, isDeleted: false })
         if (!productExists) return res.status(404).send({ status: false, msg: "Prduct Does not Exists" })
 
-        if (cartExists.userId != req.params.userId) {
-            return res.status(400).send({ status: false, msg: "Params userId does not match with the userId inside of Cart" })
+        if (!validation.isValid(removeProduct)) {
+            return res.status(400).send({ status: false, msg: "please enter removeProduct" })
         }
+        if (!(removeProduct == '0' || removeProduct == '1')) {
+            return res.status(400).send({ status: false, msg: "Bad field for removeProduct" })
+        }
+        removeProduct = Number(removeProduct)
+
         if (removeProduct == 0) {
             let flag
             let quantity;
@@ -184,7 +180,7 @@ const removeProduct = async function (req, res) {
                     }
                 }
                 if (flag !== 1) {
-                    return res.status(404).send({ status: false, msg: "Deleted or does not Exists" })
+                    return res.status(404).send({ status: false, msg: "product does not Exists" })
                 }
                 totalPrice = cartExists.totalPrice
                 totalPrice -= (productExists.price * quantity)
@@ -206,7 +202,7 @@ const removeProduct = async function (req, res) {
                 }
             }
             if (flag !== 1) {
-                return res.status(404).send({ status: false, msg: "Deleted or does not Exists" })
+                return res.status(404).send({ status: false, msg: "product does not Exists" })
             }
 
             if (quantity > 1) {
@@ -245,8 +241,7 @@ const getCartByUserId = async function (req, res) {
         }
 
         // authorization
-
-        if (user._id != req.userId) {
+        if (userId != req.userid) {
             return res.status(403).send({ status: false, message: `Unauthorized access! info of owner doesn't match` });
         }
         return res.status(200).send({ status: true, message: "Success", data: usercartid })
@@ -269,7 +264,7 @@ const deleteCart = async function (req, res) {
             return res.status(404).send({ staus: false, message: "user does not exist" })
         }
         // authorization
-        if (user != req.userId) {
+        if (user != req.userid) {
             return res.status(403).send({ status: false, message: `Unauthorized access! info of owner doesn't match` });
         }
         const cart = await cartModel.findOne({ userId: user }).select({ _id: 1 })

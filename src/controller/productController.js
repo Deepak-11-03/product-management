@@ -19,27 +19,28 @@ const addProducts = async function (req, res) {
             return res.status(400).send({ msg: "file required" })
         }
 
-        if (!validation.isValid(title))
+        if (!validation.isValid(title)){
             return res.status(400).send({ status: false, msg: "Enter Title" })
+        }
         let usedTille = await productModel.findOne({ title })
-        if (usedTille)
+        if (usedTille){
             return res.status(400).send({ status: false, msg: "Title already Present" })
-
-        if (!validation.isValid(description))
+        }
+        if (!validation.isValid(description)){
             return res.status(400).send({ status: false, msg: "Enter description" })
-
-        if (price < 0 || !validation.isValid(price) || !/\d/.test(price))
+        }
+        if (price < 0 || !validation.isValid(price) || !/\d/.test(price)){
             return res.status(400).send({ status: false, msg: "enter Price" })
-
-        if (currencyId != "INR")
+        }
+        if (currencyId != "INR"){
             return res.status(400).send({ status: false, msg: "wrong CurrencyId" })
-
-        if (currencyFormat != '₹')
+        }
+        if (currencyFormat != '₹'){
             return res.status(400).send({ status: false, msg: "wrong CurrencyFormat" })
-
-        if (availableSizes <= 0 || !validation.isValid(availableSizes))
+        }
+        if (availableSizes <= 0 || !validation.isValid(availableSizes)){
             return res.status(400).send({ status: false, msg: "Add Sizes" })
-
+        }
         if (availableSizes) {
             let array = availableSizes.split(",").map(x => x.trim())
 
@@ -47,21 +48,16 @@ const addProducts = async function (req, res) {
                 if (!(["S", "XS", "M", "X", "L", "XXL", "XL"].includes(array[i]))) {
                     return res.status(400).send({ status: false, message: `Available Sizes are ${["S", "XS", "M", "X", "L", "XXL", "XL"]}` })
                 }
-
             }
-
             if (Array.isArray(array)) {
                 data.availableSizes = array
             }
         }
-        if (installments < 0)
+        if (installments < 0){
             return res.status(400).send({ status: false, msg: "Bad Installments Field" })
-
-
+        }
         let created = await productModel.create(data)
         return res.status(201).send({ status: true, msg: "Success", data: created })
-
-
     } catch (err) {
         res.status(500).send({ status: false, msg: err.message })
     }
@@ -189,14 +185,14 @@ const updateProducts = async function (req, res) {
             return res.status(400).send({ status: false, msg: "enter Price" })
         }
 
-        if (availableSizes && availableSizes <= 0 || !validation.isValid(availableSizes)) {
+        if (availableSizes && !validation.isValid(availableSizes) || availableSizes == "") {
             return res.status(400).send({ status: false, msg: "Add Sizes" })
         }
 
         if (availableSizes && ! /(S|XS|M|X|L|XXL|XL)$/.test(availableSizes)) {
             return res.status(400).send({ status: false, msg: "Sizes only includes ['S', 'XS','M','X', 'L','XXL', 'XL']" })
         }
-
+        
         if (installments && (!validation.isValid(installments)) || installments == "") {
             return res.status(400).send({ status: false, message: "please enter installments" })
         }
@@ -204,8 +200,11 @@ const updateProducts = async function (req, res) {
             return res.status(400).send({ status: false, msg: "enter style" })
         }
 
-        if (isFreeShipping && (!isFreeShipping.isValid(style) || !/\true|false/.test(isFreeShipping))) {
+        if (isFreeShipping && (!validation.isValid(isFreeShipping) || !/true|false/.test(isFreeShipping))) {
             return res.status(400).send({ status: false, msg: "enter isFreeShipping" })
+        }
+        if(isFreeShipping && !(typeof value === 'boolean')){
+            return res.send("enter boolean value")
         }
 
 

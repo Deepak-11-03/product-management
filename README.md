@@ -356,7 +356,8 @@ Send [form-data](https://developer.mozilla.org/en-US/docs/Web/API/FormData)
 - Make sure the userId in params and in JWT token match.
 - Make sure the user exist
 - Get order id in request body
-- Make sure the order belongs to the user
+- Make sure the order belongs to the user                    
+
 - Make sure that only a cancellable order could be canceled. Else send an appropriate error message and response.
 - __Response format__
   - _**On success**_ - Return HTTP status 200. Also return the updated order document. The response should be a JSON object like [this](#successful-response-structure)
