@@ -23,14 +23,15 @@ router.delete('/products/:productId', productController.deleteProduct)
 
 // ========================cartapi============================
 
-router.post('/users/:userId/cart', cartController.createCart)
-router.get('/users/:userId/cart', cartController.getCartByUserId)
+router.post('/users/:userId/cart',auth.auth, cartController.createCart)
+router.get('/users/:userId/cart', auth.auth, cartController.getCartByUserId)
 router.put('/users/:userId/cart', auth.auth, cartController.removeProduct)
 router.delete('/users/:userId/cart', auth.auth, cartController.deleteCart)
 
+// ========================orderApi============================
 
-router.post('/users/:userId/orders',orederController.createOrder)
-router.put('/users/:userId/orders',orederController.updateOrder)
+router.post('/users/:userId/orders', auth.auth, orederController.createOrder)
+router.put('/users/:userId/orders', auth.auth, orederController.updateOrder)
 
 
 

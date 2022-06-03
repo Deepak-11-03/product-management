@@ -10,21 +10,15 @@ aws.config.update({
     region: "ap-south-1"
 })
 
-
-
 // ====================================================userRegistration===========================================
-
 
 const registerUser = async function (req, res) {
     try {
         let data = req.body;
-
         let { fname, lname, email, phone, password, address } = data
-
         if (!validation.validBody(data)) {
             return res.status(400).send({ status: false, message: "please provide details" })
         }
-
         if (!validation.isValid(fname)) {
             return res.status(400).send({ status: false, message: "fname is required" })
         }
@@ -42,11 +36,9 @@ const registerUser = async function (req, res) {
         if (usedEmail) {
             return res.status(400).send({ status: false, message: "email already exist" })
         }
-
         // image upload
         let files = req.files
         if (files && files.length > 0) {
-
             let uploadedFileURL = await validation.uploadFile(files[0])
             data.profileImage = uploadedFileURL
         }
@@ -78,7 +70,6 @@ const registerUser = async function (req, res) {
         if (!validation.isValid(address)) {
             return res.status(400).send({ status: false, message: "address is required" })
         }
-
         // shipping addresss
         if (!address.shipping) {
             return res.status(400).send({ status: false, message: "shipping address is required" })
@@ -99,8 +90,6 @@ const registerUser = async function (req, res) {
         if (!/^\d{6}/.test(pincode)) {
             return res.status(400).send({ status: false, message: "please enter 6 digit pincode" })
         }
-
-
         // billing address
         if (!address.billing) {
             return res.status(400).send({ status: false, message: "billing address is required" })
@@ -117,7 +106,6 @@ const registerUser = async function (req, res) {
         if (!/^\d{6}/.test(pincode)) {
             return res.status(400).send({ status: false, message: "please enter 6 digit pincode" })
         }
-
         let userDetail = await userModel.create(data);
         return res.status(201).send({ status: true, message: "User created successfully", data: userDetail })
     }
@@ -147,32 +135,25 @@ const userLogin = async function (req, res) {
         if (!validation.isValid(password)) {
             return res.status(400).send({ status: false, message: "please provide password" })
         }
-
         const validPassword = await bcrypt.compare(data.password, details.password);
         if (!validPassword) {
             return res.status(401).json({ message: "inValid password" });
         }
-
         // token creation
         let token = jwt.sign({ userId: id.toString() }, 'uranium_project-5_group_30', { expiresIn: "60 min" })
-
         res.header('authorization', token);
-        return res.status(200).send({ status: true, message: 'User login successfull', data: { id, token } });
-
-
+        return res.status(200).send({ status: true, message: 'Success', data: { id, token } });
 
     } catch (error) {
         return res.status(500).send({ status: false, err: error.message })
     }
 }
 
-
-// =================================get details=====================================
+// =============================================get details=============================================================
 
 const getDetails = async function (req, res) {
     try {
         let userid = req.params.userId
-
 
         if (!validation.validObjectId(userid)) {
             return res.status(400).send({ status: false, message: "Invalid type of userId" })
@@ -182,15 +163,14 @@ const getDetails = async function (req, res) {
         if (!userData) {
             return res.status(404).send({ status: false, message: "user not found" })
         }
-        return res.status(200).send({ status: true, message: "Details fetched successfully", data: userData })
+        return res.status(200).send({ status: true, message: "Success", data: userData })
     }
     catch (error) {
         return res.status(500).send({ status: false, err: error.message })
     }
 }
 
-
-// ========================================updateDetails============================================
+// ===================================================updateDetails=======================================================
 
 const updateDetails = async function (req, res) {
     try {
@@ -204,7 +184,6 @@ const updateDetails = async function (req, res) {
         if (userId != req.userid) {
             return res.status(403).send({ status: false, message: "unauthorized user" })
         }
-
         if (!validation.validBody(data)) {
             return res.status(400).send({ status: false, message: "please provide data to update" })
         }
@@ -212,9 +191,7 @@ const updateDetails = async function (req, res) {
         if (!user) {
             return res.status(404).send({ status: false, message: "No user found" })
         }
-
         // taking input to update
-
         if ((fname && !validation.isValid(fname)) || fname == "") {
             return res.status(400).send({ status: false, message: "please enter Fname" })
         }
@@ -251,14 +228,11 @@ const updateDetails = async function (req, res) {
             let newHashPass = await bcrypt.hash(data.password, 10)
             password = newHashPass
         }
-
         let files = req.files
         if ((files && files.length > 0)) {
-
             let uploadedFileURL = await validation.uploadFile(files[0])
             profileImage = uploadedFileURL
         }
-
         let arr = Object.values(data)
         for (let i = 0; i < arr.length; i++) {
             if (!validation.isValid(arr[i])) return res.status(400).send({ status: false, msg: "Bad request Field" })

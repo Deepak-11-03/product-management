@@ -3,6 +3,8 @@ const userModel = require('../models/userModel')
 const orderModel = require('../models/orderModel')
 const validation = require('../validator/validator')
 
+//==================================================createOrder===============================================
+
 const createOrder = async function (req, res) {
     let userId = req.params.userId
     let cancellable = req.body.cancellable
@@ -45,6 +47,7 @@ const createOrder = async function (req, res) {
     return res.status(201).send({ status: true, message: "success", data: order })
 }
 
+//==================================================updateOrder=======================================================
 
 const updateOrder = async function (req, res) {
     let userId = req.params.userId
@@ -101,4 +104,5 @@ const updateOrder = async function (req, res) {
         return res.status(200).send({ status: true, message: "success", data: updatedOrder })
     }
 }
+
 module.exports = { createOrder, updateOrder }
