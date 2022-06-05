@@ -58,7 +58,7 @@ const addProducts = async function (req, res) {
         return res.status(201).send({ status: true, message: "Success", data: created })
 
     } catch (err) {
-        res.status(500).send({ status: false, message: err.message })
+        return res.status(500).send({ status: false, error: err.message })
     }
 }
 
@@ -114,7 +114,7 @@ const getdata = async function (req, res) {
                 }
                 filter.price = { $lt: priceLessThan };
             }
-            const getdata = await productModel.find({ $and: [{ isDeleted: false }, filter] }).sort({ "price": 1 })
+            const getdata = await productModel.find({ $and: [{ isDeleted: false }, filter] }).sort({ price: priceSort })
             if (getdata.length > 0) {
                 return res.status(200).send({ staus: true,message:"Success", data: getdata })
             } else {
