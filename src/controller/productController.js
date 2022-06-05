@@ -2,7 +2,6 @@ const validation = require('../validator/validator');
 const productModel = require('../models/productModel')
 
 //===================================================addProducts========================================================
-
 const addProducts = async function (req, res) {
     try {
         let data = req.body

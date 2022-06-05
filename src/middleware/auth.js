@@ -11,6 +11,7 @@ const auth = async function (req, res, next) {
         req.userid = decodedToken.userId
         next()
     }
+    
     catch (err) {
         return res.status(500).send({ status: false, error: err.message })
     }

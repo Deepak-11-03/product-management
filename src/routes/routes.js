@@ -14,7 +14,6 @@ router.get('/user/:userId/profile', auth.auth, userController.getDetails)
 router.put('/user/:userId/profile', auth.auth, userController.updateDetails)
 
 // ======================productapi======================
-
 router.post('/products', productController.addProducts)
 router.get('/products', productController.getdata)
 router.get('/products/:productId', productController.getProductById)

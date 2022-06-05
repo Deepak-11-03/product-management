@@ -15,11 +15,6 @@ mongoose.connect("mongodb+srv://user:ISjwDttcDksEnCcv@cluster0.hja9z.mongodb.net
         console.log(err.message)
     });
 app.use('/', route)
-
-app.use('*', (req, res) => {
-    return res.status(404).send({ status: false, message: "page not found" })
-})
-
 app.listen(process.env.PORT || 3000, () => {
     console.log("app is listen on port" + (process.env.PORT || 3000))
 })

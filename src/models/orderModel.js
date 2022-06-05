@@ -24,6 +24,7 @@ const orderSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
+    
     totalItems:{
         type:Number,
         required:true
